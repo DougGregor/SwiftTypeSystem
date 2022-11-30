@@ -12,21 +12,32 @@ public protocol TypeSystem {
   /// system to refer to the underlying entity.
   associatedtype ResolvedNameBaggage: Hashable
 
+  /// A type within this type system.
+  typealias TypeRef = Type<Self>
+
   /// Bind the names of a type in the given context, resolving names to the
   /// kind of entity (and associated baggage) providing resolved names for each
   /// identifier.
-  func bind(_ type: Type, in context: Context) -> Type
+  func bind(_ type: TypeRef, in context: Context) -> TypeRef
 
-  /// Resolve a type in context, 
+  /// Resolve a type in context, binding any names, checking generic arguments,
+  /// and producing complete substitution maps (for example).
   ///
-  /// Note: the
-  func resolve(_ type: Type, in context: Context) -> Type
+  /// Note: we need some way of producing errors.
+  func resolve(_ type: TypeRef, in context: Context) -> TypeRef
 
   /// Canonicalize a type in context, producing an equivalent type that
   /// reduces all syntactic sugar (including, e.g., type aliases,
-  /// array/dictionary/optional sugar, parentheses).
+  /// array/dictionary/optional sugar, parentheses, and so on).
   ///
-  /// Comparing two canonicalized types for equality will determine whether the
-  /// types are semantically equivalent in the type system.
-  func canonicalize(_ type: Type, in context: Context) -> Type
+  /// The canonical type produced from this operation is the language's notion
+  /// of the type, which provides complete information for identifying the type
+  /// independent of any context. A canonical type can be reasonably
+  /// interpreted within any type system, without consulting system-specific
+  /// baggage.
+  ///
+  /// Comparing two canonical types for equality determines whether
+  /// the two types are semantic equivalent according to the language
+  /// definition.
+  func canonicalize(_ type: TypeRef, in context: Context) -> TypeRef
 }

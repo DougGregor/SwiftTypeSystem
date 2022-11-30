@@ -1,4 +1,4 @@
-public struct GenericSignature {
-  public var genericParameters: [GenericParameter]
-  public var requirements: [GenericRequirement]
+public struct GenericSignature<System: TypeSystem> {
+  public var genericParameters: [GenericParameter<System>]
+  public var requirements: [GenericRequirement<System>]
 }

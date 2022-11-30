@@ -29,25 +29,27 @@ public enum LayoutConstraint {
 
 /// A generic requirement that is part of the generic signature of a type,
 /// e.g., `C: Collection` or `C.Element == C2.Element`.
-public enum GenericRequirement {
+public enum GenericRequirement<System: TypeSystem> {
+  public typealias TypeRef = Type<System>
+
   /// A type bound such as `C: Collection` or `T: SomeSuperclass`.
-  case typeBound(Type, Type)
+  case typeBound(TypeRef, TypeRef)
 
   /// A same-type constraint such as `C.Element == C2.Element`.
-  case sameType(Type, Type)
+  case sameType(TypeRef, TypeRef)
 
   /// A same-shape constraint that ensures that two parameter packs have the
   /// same shape.
   ///
   /// Note: this does not have a spelling in the surface language.
-  case sameShape(Type, Type)
+  case sameShape(TypeRef, TypeRef)
 
   /// A layout constraint that states that a given type
-  case layout(Type, LayoutConstraint)
+  case layout(TypeRef, LayoutConstraint)
 
   /// A pack expansion of a generic requirement, e.g.,
   /// `T.Element = U.Element...`.
   ///
   /// Note: this might not be part of the variadic generics proposal.
-  indirect case packExpansion(GenericRequirement)
+  indirect case packExpansion(GenericRequirement<System>)
 }

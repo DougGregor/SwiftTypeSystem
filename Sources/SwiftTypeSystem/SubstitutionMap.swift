@@ -1,4 +1,4 @@
-public struct SubstitutionMap {
-  public let genericSignature: GenericSignature
-  public let genericArguments: [GenericArgument]
+public struct SubstitutionMap<System: TypeSystem> {
+  public let genericSignature: GenericSignature<System>
+  public let genericArguments: [GenericArgument<System>]
 }

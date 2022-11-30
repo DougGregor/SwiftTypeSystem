@@ -1,85 +1,103 @@
 public typealias Identifier = String
 
-public enum Type {
-  /// A referenced to a named type.
-  ///
-  /// This represents any named type, like 'Set<T>', which always includes
-  /// the name, but might also have the parent type (i.e., the type before
-  /// the `.` in `A.B`) and generic arguments.
-  ///
-  /// - Parameters:
-  ///   - parent: The parent of this type, i.e., the enclosing type that is
-  ///     written before the `.`
-  ///   - name: The name of the type.
-  ///   - genericArguments: If present, the generic arguments provided in
-  ///     angle brackets ('<...>').
-  ///   - kind: If present, describes what kind of entity is referenced by the
-  ///     name, i.e., a struct, generic parameter, associated type, and so on.
-  ///   - substitutions: If present, the complete set of substitutions applied
-  ///     to a generic type to produce a specialized type.
-  indirect case named(
-    parent: Type?,
-    name: Identifier,
-    genericArguments: [Type]?,
-    kind: ResolvedName?,
-    substitutions: SubstitutionMap?
-  )
+public struct Type<System: TypeSystem> {
+  public typealias TypeRef = Type<System>
 
-  /// An optional type T?.
-  indirect case optional(Type)
+  /// The structure of the type, which mirrors the spelling of the type as
+  /// written in the language.
+  public let structure: Structure
 
-  /// An array type [T].
-  indirect case array(Type)
+  /// Additional "baggage" that provides more information about the type being
+  /// described, which can only be interpreted by the specific type system.
+  public var baggage: System.TypeBaggage?
+}
 
-  /// A dictionary type [K:V].
-  indirect case dictionary(key: Type, value: Type)
+extension Type {
+  /// The kind of type, which provides a complete description of the Swift
+  /// type system.
+  public enum Structure {
+    /// A referenced to a named type.
+    ///
+    /// This represents any named type, like 'Set<T>', which always includes
+    /// the name, but might also have the parent type (i.e., the type before
+    /// the `.` in `A.B`) and generic arguments.
+    ///
+    /// - Parameters:
+    ///   - parent: The parent of this type, i.e., the enclosing type that is
+    ///     written before the `.`
+    ///   - name: The name of the type.
+    ///   - genericArguments: If present, the generic arguments provided in
+    ///     angle brackets ('<...>').
+    ///   - kind: If present, describes what kind of entity is referenced by the
+    ///     name, i.e., a struct, generic parameter, associated type, and so on.
+    ///   - substitutions: If present, the complete set of substitutions applied
+    ///     to a generic type to produce a specialized type.
+    indirect case named(
+      parent: TypeRef?,
+      name: Identifier,
+      genericArguments: [TypeRef]?,
+      kind: ResolvedName?,
+      substitutions: SubstitutionMap<System>?
+    )
 
-  /// A function type (params) -> type.
-  indirect case function(
-    parameters: [FunctionTypeParameter],
-    result: Type,
-    attributes: FunctionAttributes
-  )
+    /// An optional type T?.
+    indirect case optional(TypeRef)
 
-  /// A tuple type (T1, T2, ..., TN), including a parenthesized type (T).
-  indirect case tuple([TupleTypeElement])
+    /// An array type [T].
+    indirect case array(TypeRef)
 
-  /// A composition type A & B.
-  indirect case composition([Type])
+    /// A dictionary type [K:V].
+    indirect case dictionary(key: TypeRef, value: TypeRef)
 
-  /// An existential type 'any P'.
-  indirect case existential(Type)
+    /// A function type (params) -> type.
+    indirect case function(
+      parameters: [FunctionTypeParameter],
+      result: TypeRef,
+      attributes: FunctionAttributes
+    )
 
-  /// An opaque type 'some P'.
-  indirect case opaque(Type)
+    /// A tuple type (T1, T2, ..., TN), including a parenthesized type (T).
+    indirect case tuple([TupleTypeElement<System>])
 
-  /// A pack expansion T....
-  indirect case packExpansion(Type)
+    /// A composition type A & B.
+    indirect case composition([TypeRef])
 
-  /// A metatype T.Type
-  indirect case metatype(Type)
+    /// An existential type 'any P'.
+    indirect case existential(TypeRef)
 
-  /// An existential metatype T.Protocol
-  indirect case existentialMetatype(Type)
+    /// An opaque type 'some P'.
+    indirect case opaque(TypeRef)
 
-  /// A placeholder type, spelled explicitly as '_'.
-  ///
-  /// This kind of type doesn't exist
-  case placeholder
+    /// A pack expansion T....
+    indirect case packExpansion(TypeRef)
 
-  /// An erroneous type, used in places where a type could not be determined.
-  ///
-  /// Note: compilers care deeply about this, because they need to be able
-  /// to model errors at any point in the type hierarchy. However, it is
-  /// inexpressible in the source language and most clients will deal with
-  /// errors in a different way.
-  case error
+    /// A metatype T.Type
+    indirect case metatype(TypeRef)
 
-  /// An (unnamed generic parameter), which is identified by its "depth" (i.e.,
-  /// the number of generic parameter lists in enclosing contexts) and "index"
-  /// (the number of generic parameters preceding it in its generic parameter
-  /// list).
-  ///
-  /// Note: this doesn't appear in the surface language, but
-  case genericParameter(depth: Int, index: Int)
+    /// An existential metatype T.Protocol
+    indirect case existentialMetatype(TypeRef)
+
+    /// A placeholder type, spelled explicitly as '_'.
+    ///
+    /// This kind of type doesn't exist
+    case placeholder
+
+    /// An erroneous type, used in places where a type could not be determined.
+    ///
+    /// Note: compilers care deeply about this, because they need to be able
+    /// to model errors at any point in the type hierarchy. However, it is
+    /// inexpressible in the source language and most clients will deal with
+    /// errors in a different way.
+    case error
+
+    /// An (unnamed generic parameter), which is identified by its "depth" (i.e.,
+    /// the number of generic parameter lists in enclosing contexts) and "index"
+    /// (the number of generic parameters preceding it in its generic parameter
+    /// list).
+    ///
+    /// Note: this doesn't appear in the surface language, but is present in
+    /// the compiler and in runtime metadata when working with canonical
+    /// types and generic signatures.
+    case genericParameter(depth: Int, index: Int)
+  }
 }

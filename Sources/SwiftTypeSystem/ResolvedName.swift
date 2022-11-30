@@ -1,5 +1,5 @@
 extension Type {
-  /// Describes the role of
+  /// Describes how a named type has been resolved.
   public struct ResolvedName {
     public enum Kind {
       /// A struct type.

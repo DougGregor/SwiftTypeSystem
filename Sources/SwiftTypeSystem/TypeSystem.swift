@@ -40,4 +40,12 @@ public protocol TypeSystem {
   /// the two types are semantic equivalent according to the language
   /// definition.
   func canonicalize(_ type: TypeRef, in context: Context) -> TypeRef
+
+  /// Apply the given set of `substitutions` to the provided `type`, replacing
+  /// each occurrence of a generic parameter within the type with its
+  /// corresponding generic argument.
+  func substitute(
+    in type: TypeRef,
+    with substitutions: SubstitutionMap
+  ) -> TypeRef
 }

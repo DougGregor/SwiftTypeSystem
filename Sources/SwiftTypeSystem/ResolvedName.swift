@@ -1,43 +1,44 @@
-extension Type {
-  /// Describes how a named type has been resolved.
-  public struct ResolvedName {
-    public enum Kind {
-      /// A struct type.
-      case `struct`
+// FIXME: Type was a really nice namespace, but this design forgoes that a
+// little bit...
 
-      /// An enum type.
-      case `enum`
+/// Describes how a named type has been resolved.
+public struct ResolvedName<System: TypeSystem> {
+  public enum Kind {
+    /// A struct type.
+    case `struct`
 
-      /// An actor type.
-      case `actor`
+    /// An enum type.
+    case `enum`
 
-      /// A class type.
-      case `class`
+    /// An actor type.
+    case `actor`
 
-      /// A protocol type.
-      case `protocol`
+    /// A class type.
+    case `class`
 
-      /// An associated type.
-      case associatedType
+    /// A protocol type.
+    case `protocol`
 
-      /// A named generic parameter.
-      case genericParameter
+    /// An associated type.
+    case associatedType
 
-      /// A module.
-      case module
+    /// A named generic parameter.
+    case genericParameter
 
-      /// A typealias.
-      case `typealias`
+    /// A module.
+    case module
 
-      /// The 'Self' type.
-      case selfType
-    }
+    /// A typealias.
+    case `typealias`
 
-    /// The kind of entity to which this name resolved.
-    public let kind: Kind
-
-    /// Additional baggage associated with the resolved name, which can
-    /// only be meaningfully interpreted by the specific type system.
-    public var baggage: System.ResolvedNameBaggage?
+    /// The 'Self' type.
+    case selfType
   }
+
+  /// The kind of entity to which this name resolved.
+  public let kind: Kind
+
+  /// Additional baggage associated with the resolved name, which can
+  /// only be meaningfully interpreted by the specific type system.
+  public var baggage: System.ResolvedNameBaggage?
 }

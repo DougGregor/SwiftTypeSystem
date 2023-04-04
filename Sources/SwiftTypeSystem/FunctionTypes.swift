@@ -1,7 +1,6 @@
-
-extension Type {
+public struct FunctionType<System: TypeSystem> {
   /// The calling convention used for a function.
-  public enum FunctionConvention {
+  public enum Convention {
     /// The normal Swift calling convention.
     ///
     /// This is the default calling convention for Swift functions, which is
@@ -26,7 +25,7 @@ extension Type {
   }
 
   /// Attributes provided for a function.
-  public struct FunctionAttributes {
+  public struct Attributes {
     /// Whether this function is asynchronous.
     public var `async`: Bool
 
@@ -40,10 +39,10 @@ extension Type {
     public var `sendable`: Bool
 
     /// The calling convention for the function.
-    public var convention: FunctionConvention = .swift
+    public var convention: Convention = .swift
 
     /// The global actor, such as `@MainActor`, on which this function runs.
-    public var globalActor: Type?
+    public var globalActor: System.Type?
   }
 
   /// The convention used to pass a parameter.
@@ -61,7 +60,7 @@ extension Type {
   }
 
   /// A parameter within a function type.
-  public struct FunctionTypeParameter {
+  public struct Parameter {
     /// The argument label used when calling the function.
     ///
     /// Note: this is in the language grammar, but must either be omitted or

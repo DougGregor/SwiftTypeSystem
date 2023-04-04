@@ -21,6 +21,9 @@ let package = Package(
         .target(
             name: "SwiftTypeSystem",
             dependencies: []),
+        .target(
+            name: "SwiftRuntime",
+            dependencies: ["SwiftTypeSystem"]),
         .testTarget(
             name: "SwiftTypeSystemTests",
             dependencies: ["SwiftTypeSystem"]),

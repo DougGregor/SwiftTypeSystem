@@ -1,4 +1,9 @@
 public struct TupleTypeElement<System: TypeSystem> {
-  var name: Identifier?
-  var type: Type<System>
+  public var name: Identifier?
+  public var type: System.TypeRef
+
+  public init(name: Identifier?, type: System.TypeRef) {
+    self.name = name
+    self.type = type
+  }
 }

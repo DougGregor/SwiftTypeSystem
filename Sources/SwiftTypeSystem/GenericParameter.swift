@@ -1,6 +1,4 @@
 public enum GenericParameter<System: TypeSystem> {
-  public typealias TypeRef = Type<System>
-
   /// A generic type parameter, e.g., <T>.
   case type(
     name: Identifier?,
